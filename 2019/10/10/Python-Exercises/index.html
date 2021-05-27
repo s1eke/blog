@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="theme-color" content="#6C9D5E"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>记一次 Python 脚本坑 - S1eke&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="起因公司有百来台矿机接入 f2pool 在挖 eth ，但是系统用的并不是我们自己的，也没办法提供权限，所以监控上有一点麻烦。还好 f2pool 也算是比较大的矿池了，看了一下，有提供 api 给用,"> 
+    <meta name="author" content="Sean Fang"> 
+    <link rel="alternative" href="atom.xml" title="S1eke&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body class="loading">
+
+    <div class="app-refresh" id="app-refresh">
+        <div class="app-refresh-wrap" onclick="location.reload()">
+            <label>已更新最新版本</label>
+            <span>点击刷新</span>
+        </div>
+    </div>
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.addEventListener('controllerchange', function() {
+                    showNotification();
+                });
+            }
+    
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    
+        function showNotification() {
+            document.querySelector('meta[name=theme-color]').content = '#000';
+            document.getElementById('app-refresh').className += ' app-refresh-show';
+        }
+    </script>
+    
+    <span id="config-title" style="display:none">S1eke&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://blog.jugg.xyz"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">记一次 Python 脚本坑</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">记一次 Python 脚本坑</h1>
+        <div class="stuff">
+            <span>十月 10, 2019</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/Python/" rel="tag">Python</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>公司有百来台矿机接入 f2pool 在挖 eth ，但是系统用的并不是我们自己的，也没办法提供权限，所以监控上有一点麻烦。还好 f2pool 也算是比较大的矿池了，看了一下，有提供 api 给用户使用，就写一个监控脚本吧。蛤？ f2pool 还提供微信推送监控？emmmm………别人的哪有自己写的好（其实是因为没有需求也要创造需求（逃</p>
+<hr>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><ul>
+<li>记录掉线矿机 ID 以及掉线时间</li>
+<li>矿机掉线推送消息到 telegram channel </li>
+<li>矿机上线后消息自动删除，防止 channel 内消息过多</li>
+</ul>
+<hr>
+<h2 id="设计"><a href="#设计" class="headerlink" title="设计"></a>设计</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span>():</span></span><br><span class="line">    通过 getData() 函数获得推送消息的输出内容以及是否推送的判断，调用 saveLog() 函数并将推送消息内容作为传参，同时将接收系统当前时间的返回值，通过 <span class="keyword">if</span> 判断消息是否推送，如推送则调用 postMessages()函数开始推送。</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getData</span>():</span> </span><br><span class="line">    requests.get 获取访问 api ，通过 decode 方法解码返回值的 content 属性内容，得到完整的 json 数据。然后通过 json.loads 将 json 数据转换成 dict 数据，通过 get 方法取得矿机总数，总算力以及所有矿机详细数据。</span><br><span class="line">        再通过循环取所有矿机的最后一次提交时间，将矿机带时区格式的最后提交时间转换成时间戳格式与当前时间比对，超过十分钟的就算掉线矿机。同时为避免下架矿机频繁推送造成影响，选择掉线超过八小时则默认掉线设备，不予统计。将所有掉线设备计入列表，并综合所有数据产生输出以及是否推送的判断作为返回值。</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">deleteMessage</span>(<span class="params">messageID</span>):</span></span><br><span class="line">    接受传递过来的消息 ID ，通过 api 删除该消息。</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">postMessages</span>(<span class="params">minerData</span>):</span></span><br><span class="line">    通过api推送消息，并记录返回值，将推送消息 ID 存下，二十分钟后调用 deleteMessage() 函数自动删除该消息，防止 channel 内消息过多，影响查看。</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">saveLog</span>(<span class="params">minerData</span>):</span></span><br><span class="line">    接受推送内容参数并记录到 log 文件，同时将当前设备时间作为返回值。</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="坑"><a href="#坑" class="headerlink" title="坑"></a>坑</h2><p>我是比较喜欢新鲜技术的人，俗称小白鼠，所以脚本定时推送选了 systemd timer （其实也并不新，已经沦为主流了），结果推送几乎每两天就挂掉一次，于是开始排查。</p>
+<p>第一个版本我写入日志用的是 open() 函数，但是我没有写 close() ，我怀疑是不是文件流打开没有关闭导致的推送卡住，于是我学会了 with-as 语句。然而现实是残酷的，没两天推送又挂了。我开始怀疑是 systemd 的锅，尝试了各种配置方案，无果。最终，偶然在手动调试的时候发现 api 有时候不会返回数据，而且会一直卡在这，我立刻醒悟过来，可能是 requests 拿不到数据反而把自己耽误了，于是加上 timeout 终于了结了。</p>
+<p>其实这里我还是有点疑惑，我 systemd 的配置写的是 oneshot ，按照 systemd 的说明，这个选项应该是无论程序执行结果，都会去执行下一次任务，但是却也被卡住了，也许我还没有找到真正的原因……</p>
+<hr>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/bin/env python</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> threading <span class="keyword">import</span> Timer</span><br><span class="line"></span><br><span class="line">ISOTIMEFORMAT = <span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span></span><br><span class="line">LINE = <span class="string">&quot;\n-------------------------------------------------------------------------------------------------------&quot;</span></span><br><span class="line">DELETETIME = <span class="number">1190</span></span><br><span class="line">URL = &#123;<span class="string">&#x27;sendMessage&#x27;</span>: <span class="string">&#x27;**YOURTGBOTAPIKEY**/sendMessage&#x27;</span>,</span><br><span class="line">       <span class="string">&#x27;deleteMessage&#x27;</span>: <span class="string">&#x27;**YOURTGBOTAPIKEY**/deleteMessage&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getData</span>():</span></span><br><span class="line">    <span class="comment"># 从 f2pool api 获取矿机实时数据</span></span><br><span class="line">    ethminer = requests.get(</span><br><span class="line">        url=<span class="string">&#x27;**YOURURL**&#x27;</span>, timeout=<span class="number">30</span>)</span><br><span class="line">    ethminerDict = json.loads(ethminer.content.decode())</span><br><span class="line">    minerNumber = ethminerDict.get(<span class="string">&#x27;worker_length&#x27;</span>)</span><br><span class="line">    minerWorkers = ethminerDict.get(<span class="string">&#x27;workers&#x27;</span>)</span><br><span class="line">    minerHashrate = (ethminerDict.get(<span class="string">&#x27;hashrate&#x27;</span>)/<span class="number">1000000</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 统计掉线矿机 ID 及掉线时间</span></span><br><span class="line">    dict0 = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(minerNumber):</span><br><span class="line">        minerTime = (minerWorkers[i][<span class="number">6</span>])</span><br><span class="line">        minerTimeArray = time.strptime(minerTime, <span class="string">&quot;%Y-%m-%dT%H:%M:%S.%fZ&quot;</span>)</span><br><span class="line">        minerTimeStamp = time.mktime(minerTimeArray)</span><br><span class="line">        timeNow = time.mktime(time.gmtime(time.time()))</span><br><span class="line">        timeDiff = (timeNow-minerTimeStamp)</span><br><span class="line">        <span class="keyword">if</span> <span class="number">28800</span> &gt; timeDiff &gt; <span class="number">600</span>:</span><br><span class="line">            dict0[minerWorkers[i][<span class="number">0</span>]] = <span class="string">&quot;已掉线&quot;</span>+str(timeDiff//<span class="number">60</span>)+<span class="string">&quot;分钟&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 判断是否有矿机掉线或者算力不正常</span></span><br><span class="line">    offlineNumber = len(dict0)</span><br><span class="line">    <span class="keyword">if</span> dict0 <span class="keyword">or</span> minerHashrate &lt; <span class="number">30000</span>:</span><br><span class="line">        judge = <span class="literal">True</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        judge = <span class="literal">False</span></span><br><span class="line">        dict0 = <span class="string">&quot;无&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 回传判断与推送消息</span></span><br><span class="line">    minerData = <span class="string">&quot;不得了了,矿机掉线了！&quot;</span>+<span class="string">&quot;\r\n&quot;</span>+<span class="string">&quot;目前掉线&quot;</span> + \</span><br><span class="line">        str(offlineNumber)+<span class="string">&quot;台,掉线设备ID为:&quot;</span>+<span class="string">&quot;\r\n&quot;</span>+str(dict0) + \</span><br><span class="line">        <span class="string">&quot;\r\n&quot;</span>+<span class="string">&quot;所有矿机总算力为&quot;</span>+str(minerHashrate)+<span class="string">&quot;MH/s&quot;</span></span><br><span class="line">    print(judge,minerData)</span><br><span class="line">    <span class="keyword">return</span> judge, minerData</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自动删除消息推送</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">deleteMessage</span>(<span class="params">messageID</span>):</span></span><br><span class="line">    deletePost = requests.post(URL[<span class="string">&#x27;deleteMessage&#x27;</span>],</span><br><span class="line">                               data=&#123;<span class="string">&#x27;chat_id&#x27;</span>: <span class="string">&#x27;-1001241741624&#x27;</span>, <span class="string">&#x27;message_id&#x27;</span>: messageID&#125;)</span><br><span class="line">    print(deletePost)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 推送消息</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">postMessages</span>(<span class="params">minerData</span>):</span></span><br><span class="line">    pushPost = requests.post(URL[<span class="string">&#x27;sendMessage&#x27;</span>],</span><br><span class="line">                             data=&#123;<span class="string">&#x27;chat_id&#x27;</span>: <span class="string">&#x27;-1001241741624&#x27;</span>, <span class="string">&#x27;text&#x27;</span>: minerData&#125;)</span><br><span class="line">    pushReturn = json.loads(pushPost.text)</span><br><span class="line">    messageID = pushReturn[<span class="string">&quot;result&quot;</span>][<span class="string">&quot;message_id&quot;</span>]</span><br><span class="line">    sleepSometime = Timer(DELETETIME, deleteMessage, [messageID])</span><br><span class="line">    sleepSometime.start()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保存推送内容</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">saveLog</span>(<span class="params">minerData</span>):</span></span><br><span class="line">    timeNowStr = time.strftime(ISOTIMEFORMAT, time.localtime(time.time()))</span><br><span class="line">    <span class="keyword">with</span> open(<span class="string">&#x27;/var/log/push/log&#x27;</span>, <span class="string">&#x27;a+&#x27;</span>) <span class="keyword">as</span> getLog:</span><br><span class="line">        print(<span class="string">&quot;现在是UTC时间:&quot;</span>, timeNowStr, minerData, LINE, file=getLog)</span><br><span class="line">    <span class="keyword">return</span> timeNowStr</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span>():</span></span><br><span class="line">    judge, minerData = getData()</span><br><span class="line">    timeNowStr = saveLog(minerData)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> judge:</span><br><span class="line">        postMessages(minerData)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        print(timeNowStr, <span class="string">&quot;我安澜，从不掉线&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>ethminer_push.service:</strong></p>
+<figure class="highlight profile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=ethminer push service</span><br><span class="line">Wants=ethminer_push.timer</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type=oneshot</span><br><span class="line">ExecStart=/bin/python &quot;/usr/local/bin/push.py&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>ethminer_push.timer:</strong></p>
+<figure class="highlight profile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=every <span class="number">10</span> minute to get</span><br><span class="line"></span><br><span class="line">[Timer]</span><br><span class="line">OnBootSec=<span class="number">5</span>min</span><br><span class="line">OnCalendar=*:<span class="number">0</span>/<span class="number">5</span></span><br><span class="line">Persistent=true</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=timers.target</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/163/425570952.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>
