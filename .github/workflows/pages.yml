@@ -26,7 +26,10 @@ jobs:
       - name: Build
         run: |
           git submodule update --init --remote
+          npm install workbox-build gulp gulp-uglify readable-stream uglify-es --save-dev
+          npm install gulp -g
           npm run build
+          gulp build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
