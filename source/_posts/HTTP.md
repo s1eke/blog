@@ -6,6 +6,7 @@ tags:
 cover: https://static.poo1.club/image/htaccess-redirect-http-to-https-with-or-without-www.png
 ---
 
+> 本文转载自 [CS-Note](https://github.com/CyC2018/CS-Notes) 项目
 # 一 、基础概念
 
 ## URL

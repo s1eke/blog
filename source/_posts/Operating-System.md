@@ -8,6 +8,8 @@ tags:
 cover: https://static.poo1.club/image/Operating-System.jpg
 ---
 
+> 本文转载自 [CS-Note](https://github.com/CyC2018/CS-Notes) 项目
+
 # 一、概述
 
 ## 基本特征

@@ -3,7 +3,7 @@ layout: post
 title: 命令行的艺术
 date: 2019-05-31 02:58:47
 tags: 
-    - shell
+    - Shell
     - UNIX
 cover: https://static.poo1.club/image/1626408_f398_3.jpg
 ---
@@ -20,8 +20,12 @@ cover: https://static.poo1.club/image/1626408_f398_3.jpg
 - [冷门但有用](#冷门但有用)
 - [仅限 OS X 系统](#仅限-os-x-系统)
 - [仅限 Windows 系统](#仅限-windows-系统)
+  - [在 Winodws 下获取 Unix 工具](#在-winodws-下获取-unix-工具)
+  - [实用 Windows 命令行工具](#实用-windows-命令行工具)
+  - [Cygwin 技巧](#cygwin-技巧)
 - [更多资源](#更多资源)
 - [免责声明](#免责声明)
+- [授权条款](#授权条款)
 
 
 ![curl -s 'https://raw.githubusercontent.com/jlevy/the-art-of-command-line/master/README.md' | egrep -o '`\w+`' | tr -d '`' | cowsay -W50](https://static.poo1.club/img/cowsay.png)

@@ -2,10 +2,12 @@
 layout: post
 title: Docker 基础知识
 date: 2018-12-04 12:40:20
-tags: docker
+tags: 
+    - Docker
 cover: https://static.poo1.club/image/1_JAJ910fg52ODIRZjHXASBQ.png
 ---
 
+> 本文转载自 [CS-Note](https://github.com/CyC2018/CS-Notes) 项目
 
 <div align="center"> <img src="https://static.poo1.club/img/011f3ef6-d824-4d43-8b2c-36dab8eaaa72-1.png"/> </div><br>
 
