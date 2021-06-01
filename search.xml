@@ -2518,7 +2518,7 @@ character_set_server        = utf8</code></pre>
 <li><a href="#%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E">免责声明</a></li>
 <li><a href="#%E6%8E%88%E6%9D%83%E6%9D%A1%E6%AC%BE">授权条款</a></li>
 </ul>
-<p>![“curl -s ‘<a href="https://raw.githubusercontent.com/jlevy/the-art-of-command-line/master/README.md&#39;">https://raw.githubusercontent.com/jlevy/the-art-of-command-line/master/README.md&#39;</a> | egrep -o ‘<code>\w+</code>‘ | tr -d ‘`’ | cowsay -W50”](<a href="https://static.poo1.club/img/cowsay.png">https://static.poo1.club/img/cowsay.png</a>)</p>
+<p><img src="https://static.poo1.club/img/cowsay.png" alt="cowsay"></p>
 <p>熟练使用命令行是一种常常被忽视，或被认为难以掌握的技能，但实际上，它会提高你作为工程师的灵活性以及生产力。本文是一份我在 Linux 上工作时，发现的一些命令行使用技巧的摘要。有些技巧非常基础，而另一些则相当复杂，甚至晦涩难懂。这篇文章并不长，但当你能够熟练掌握这里列出的所有技巧时，你就学会了很多关于命令行的东西了。</p>
 <p>这篇文章是<a href="AUTHORS.md">许多作者和译者</a>共同的成果。<br>这里的部分内容<a href="http://www.quora.com/What-are-some-lesser-known-but-useful-Unix-commands">首次</a><a href="http://www.quora.com/What-are-the-most-useful-Swiss-army-knife-one-liners-on-Unix">出现</a>于 <a href="http://www.quora.com/What-are-some-time-saving-tips-that-every-Linux-user-should-know">Quora</a>，但已经迁移到了 Github，并由众多高手做出了许多改进。如果你在本文中发现了错误或者存在可以改善的地方，请<a href="https://github.com/jlevy/the-art-of-command-line/blob/master/CONTRIBUTING.md"><strong>贡献你的一份力量</strong></a>。</p>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>涵盖范围：</p>
