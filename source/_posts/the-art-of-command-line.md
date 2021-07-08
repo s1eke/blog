@@ -8,6 +8,7 @@ tags:
 cover: https://static.poo1.club/image/1626408_f398_3.jpg
 ---
 
+> 本文转载自 [the-art-of-command-line](https://github.com/jlevy/the-art-of-command-line/blob/master/README-zh.md) 
 
 [![Join the chat at https://gitter.im/jlevy/the-art-of-command-line](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jlevy/the-art-of-command-line?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
