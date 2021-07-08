@@ -2498,7 +2498,10 @@ character_set_server        = utf8</code></pre>
   <entry>
     <title>命令行的艺术</title>
     <url>/2019/05/31/the-art-of-command-line/</url>
-    <content><![CDATA[<p><a href="https://gitter.im/jlevy/the-art-of-command-line?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/jlevy/the-art-of-command-line"></a></p>
+    <content><![CDATA[<blockquote>
+<p>本文转载自 <a href="https://github.com/jlevy/the-art-of-command-line/blob/master/README-zh.md">the-art-of-command-line</a> </p>
+</blockquote>
+<p><a href="https://gitter.im/jlevy/the-art-of-command-line?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/jlevy/the-art-of-command-line"></a></p>
 <ul>
 <li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
 <li><a href="#%E5%9F%BA%E7%A1%80">基础</a></li>
